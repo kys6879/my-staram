@@ -1,23 +1,27 @@
-import logo from './logo.svg';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 import './App.css';
-
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Card>
+        MyService
+        <Card.Body>
+        <Form>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Control type="email" placeholder="아이디를 입력해주세요." />
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="formBasicPassword">
+            <Form.Control type="password" placeholder="패스워드를 입력해주세요." />
+          </Form.Group>
+
+          <Button variant="primary">입장하기</Button>{' '}
+        </Form>
+        </Card.Body>
+      </Card>
     </div>
   );
 }
