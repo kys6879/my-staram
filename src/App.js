@@ -1,28 +1,21 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Card from 'react-bootstrap/Card';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import './App.css';
+import React from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./App.css";
+import Login from "./login/Login";
+import Register from "./register/Register";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { Container } from "react-bootstrap";
 function App() {
+  // 로그인 or
+  // 회원가입
   return (
-    <div>
-      <Card>
-        MyService
-        <Card.Body>
-        <Form>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Control type="email" placeholder="아이디를 입력해주세요." />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Control type="password" placeholder="패스워드를 입력해주세요." />
-          </Form.Group>
-
-          <Button variant="primary">입장하기</Button>{' '}
-        </Form>
-        </Card.Body>
-      </Card>
-    </div>
+    <Container>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login"></Navigate>} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
+    </Container>
   );
 }
 
