@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Form, Button, Container, Row, Col } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -17,28 +18,38 @@ function Register() {
   const [nickname, setNickname] = useState('');
   const [isValidNickname, setIsValidNickname] = useState(false);
 
-  const [helloWorld, setHelloWorld] = useState('기본값');
+  const [helloWorld,setHelloWorld] = useState('기본값');
+
+  const navigate = useNavigate();
 
   const fetchData = () => {
-    fetch("http://localhost:4000")
-      .then(res => {
-        console.log(res.json);
-        setHelloWorld(res);
-      });
+    return fetch("http://localhost:4000")
+      .then(res => res.text())
   }
 
   useEffect( () => {
-    fetchData();
+    fetchData()
+    .then(text => setHelloWorld(text));
   }, [] );
 
   const handleCheckEmail = () => {
-    if (email === 'man@google.com') {
-      toast("이미 사용중인 이메일입니다.");
-      setIsValidEmail(false);
-    } else {
+    fetch("http://localhost:4000/duplicate/email?email="+email)
+    .then(res => res.json())
+    .then(res => {
+      console.log(res);
+      if (res.error) {
+        toast("중복확인 요청이 실패했습니다.");
+        setIsValidEmail(false);
+        return ;
+      }
+      if (res.body) {
+        toast("사용할 수 없는 이메일입니다.");
+        setIsValidEmail(false);
+        return ;
+      }
       toast("사용 가능한 이메일입니다.");
       setIsValidEmail(true);
-    }
+    });
   }
 
   useEffect(() => {
@@ -70,6 +81,25 @@ function Register() {
 
     // 이제 registerInfo를 서버로 보낼꺼임!
     console.log(registerInfo);
+
+    fetch("http://localhost:4000/register",{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json' // 요청 본문의 형식에 따라 적절한 Content-Type을 설정합니다.
+      },
+      body: JSON.stringify(registerInfo) // 요청 본문 데이터를 JSON 문자열로 변환하여 설정합니다.
+    })
+    .then(res => res.json()
+    .then(res => {
+      if (res.error) {
+        toast("회원가입에 실패했습니다. " + res.error);
+        return ;
+      }
+      toast("MYSTAGRAM에 오신것을 환영합니다. 잠시 후 로그인 페이지로 이동합니다.");
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+    }));
   }
 
   return (
