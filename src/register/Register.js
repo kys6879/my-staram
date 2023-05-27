@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import style from '../styles/Auth.module.css';
+import { useNavigate } from 'react-router-dom';
 function Register() {
 
   const [email, setEmail] = useState('');
@@ -17,28 +18,21 @@ function Register() {
   const [nickname, setNickname] = useState('');
   const [isValidNickname, setIsValidNickname] = useState(false);
 
-  const [helloWorld, setHelloWorld] = useState('기본값');
-
-  const fetchData = () => {
-    fetch("http://localhost:4000")
-      .then(res => {
-        console.log(res.json);
-        setHelloWorld(res);
-      });
-  }
-
-  useEffect( () => {
-    fetchData();
-  }, [] );
+  const navigate = useNavigate();
 
   const handleCheckEmail = () => {
-    if (email === 'man@google.com') {
-      toast("이미 사용중인 이메일입니다.");
-      setIsValidEmail(false);
-    } else {
-      toast("사용 가능한 이메일입니다.");
-      setIsValidEmail(true);
-    }
+    // 서버와 통신후
+    fetch(`http://localhost:4000/duplicate/email?email=${email}`)
+      .then(response => response.json())
+      .then(json => {
+        if (json.data) {
+          toast("이미 사용중인 이메일입니다.");
+          setIsValidEmail(false);
+        } else {
+          toast("사용 가능한 이메일입니다.");
+          setIsValidEmail(true);
+        }
+      });
   }
 
   useEffect(() => {
@@ -69,7 +63,27 @@ function Register() {
     };
 
     // 이제 registerInfo를 서버로 보낼꺼임!
-    console.log(registerInfo);
+
+    fetch('http://localhost:4000/register',{
+      method: 'POST',
+      headers: {
+        "Content-Type": 'application/json'
+      },
+      body: JSON.stringify(registerInfo)
+    })
+    .then(response => response.json())
+    .then(json => {
+      if (json.error) {
+        toast('회원가입에 실패했습니다. '+json.error);
+        return ;
+      }
+      toast('MYSTAGRAM에 오신것을 환영합니다. 잠시후 로그인페이지로 이동합니다.');
+      // 자바스크립트에서 일정 시간 뒤에 로직을 넣으려면
+      setTimeout( ()=>{
+        // 로그인페이지로 이동
+        navigate('/login');
+      }, 1500);
+    });
   }
 
   return (
@@ -86,7 +100,6 @@ function Register() {
         <Form onSubmit={handleSubmit}>
           <Row>
             <Col xs={9}>
-              <span>{helloWorld}</span>
               <Form.Group className="mb-3" controlId="formBasicEmail">
                 <Form.Control
                   type="email"
