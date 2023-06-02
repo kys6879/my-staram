@@ -1,12 +1,13 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Col, Container, FloatingLabel, Row, Form, Button } from 'react-bootstrap';
+import PostCard from './PostCard';
 
 function Post() {
   return (
     <Container>
       <Row>
-        <Col md={{ span: 8, offset: 2 }}>
+        <Col>
           <h1>Feeds</h1>
           <p>MYSTAGRAM에서 사람들과 소통하세요.</p>
           <div className='mt-5'>
@@ -19,6 +20,9 @@ function Post() {
             <Button variant="primary" className="mt-3">공유히기</Button>
           </div>
         </Col>
+      </Row>
+      <Row>
+        <PostCard />
       </Row>
     </Container>
   )
