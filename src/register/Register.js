@@ -57,100 +57,107 @@ function Register() {
     e.preventDefault(); // submit이 될 때 페이지 이동이 되는것을 막아줍니다.
 
     const registerInfo = {
-      email : email,
+      email: email,
       password: password,
       nickname: nickname
     };
 
     // 이제 registerInfo를 서버로 보낼꺼임!
 
-    fetch('http://localhost:4000/register',{
+    fetch('http://localhost:4000/register', {
       method: 'POST',
       headers: {
         "Content-Type": 'application/json'
       },
       body: JSON.stringify(registerInfo)
     })
-    .then(response => response.json())
-    .then(json => {
-      if (json.error) {
-        toast('회원가입에 실패했습니다. '+json.error);
-        return ;
-      }
-      toast('MYSTAGRAM에 오신것을 환영합니다. 잠시후 로그인페이지로 이동합니다.');
-      // 자바스크립트에서 일정 시간 뒤에 로직을 넣으려면
-      setTimeout( ()=>{
-        // 로그인페이지로 이동
-        navigate('/login');
-      }, 1500);
-    });
+      .then(response => response.json())
+      .then(json => {
+        if (json.error) {
+          toast('회원가입에 실패했습니다. ' + json.error);
+          return;
+        }
+        toast('MYSTAGRAM에 오신것을 환영합니다. 잠시후 로그인페이지로 이동합니다.');
+        // 자바스크립트에서 일정 시간 뒤에 로직을 넣으려면
+        setTimeout(() => {
+          // 로그인페이지로 이동
+          navigate('/login');
+        }, 1500);
+      });
   }
 
   return (
-    <Card>
-      <ToastContainer />
-      {/* 아래꺼 재미로 한거임 ! */}
-      <Container className={style.authTitle}>
-        <Card.Text className="display-5">MYSTAGRAM - 가입하기</Card.Text>
-        <Card.Text>
-          MYSTAGRAM은 소셜네트워크 서비스입니다. 환영합니다.
-        </Card.Text>
-      </Container>
-      <Card.Body>
-        <Form onSubmit={handleSubmit}>
-          <Row>
-            <Col xs={9}>
-              <Form.Group className="mb-3" controlId="formBasicEmail">
-                <Form.Control
-                  type="email"
-                  placeholder="이메일을 입력해주세요."
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </Form.Group>
-            </Col>
-            <Col xs={3}>
-              <Button onClick={handleCheckEmail}>중복확인</Button>
-            </Col>
-          </Row>
-          <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Control
-              type="password"
-              placeholder="패스워드를 입력해주세요."
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Control
-              type="password"
-              placeholder="동일한 패스워드를 입력해주세요."
-              value={passwordCheck}
-              onChange={(e) => setPasswordCheck(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Control
-              type="text"
-              placeholder="닉네임"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-            />
-          </Form.Group>
-          <Button variant="primary"
-            type="submit"
-            disabled={
-              !isValidEmail
-              || !isValidPassword
-              || !isValidNickname} >가입하기
-            </Button>
-          <span className="m-2">또는</span>
-          <a href="/login" style={{ textDecoration: "none" }}>
-            로그인하기
-          </a>
-        </Form>
-      </Card.Body>
-    </Card>
+
+    <Container>
+      <Row className="justify-content-center mt-4">
+        <Col xs={4} sm={5} md={6}>
+          <Card>
+            <ToastContainer />
+            {/* 아래꺼 재미로 한거임 ! */}
+            <Container className={style.authTitle}>
+              <Card.Text className="display-5">가입하기</Card.Text>
+              <Card.Text>
+                MYSTAGRAM은 소셜네트워크 서비스입니다. 환영합니다.
+              </Card.Text>
+            </Container>
+            <Card.Body>
+              <Form onSubmit={handleSubmit}>
+                <Row>
+                  <Col xs={9}>
+                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                      <Form.Control
+                        type="email"
+                        placeholder="이메일을 입력해주세요."
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col xs={3}>
+                    <Button onClick={handleCheckEmail}>중복확인</Button>
+                  </Col>
+                </Row>
+                <Form.Group className="mb-3" controlId="formBasicPassword">
+                  <Form.Control
+                    type="password"
+                    placeholder="패스워드를 입력해주세요."
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="formBasicPassword">
+                  <Form.Control
+                    type="password"
+                    placeholder="동일한 패스워드를 입력해주세요."
+                    value={passwordCheck}
+                    onChange={(e) => setPasswordCheck(e.target.value)}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="formBasicPassword">
+                  <Form.Control
+                    type="text"
+                    placeholder="닉네임"
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                  />
+                </Form.Group>
+                <Button variant="primary"
+                  type="submit"
+                  disabled={
+                    !isValidEmail
+                    || !isValidPassword
+                    || !isValidNickname} >가입하기
+                </Button>
+                <span className="m-2">또는</span>
+                <a href="/login" style={{ textDecoration: "none" }}>
+                  로그인하기
+                </a>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   )
 }
 
