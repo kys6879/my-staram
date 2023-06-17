@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import Login from "./login/Login";
@@ -10,7 +10,7 @@ import { isValidJwt } from "./auth/tokenService";
 function App() {
 
   // 로그인 했는지 안 했는지
-  const isAuthenticated = isValidJwt();
+  const [isAuthenticated] = useState(isValidJwt());
 
   return (
     <Container>

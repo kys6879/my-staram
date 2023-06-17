@@ -17,15 +17,18 @@ export function getCurrentUser(){
 }
 // 로컬 스토리지에 저장된 토큰이 유효한지 판별
 export function isValidJwt() {
-
+    console.log("isValidJwt");
     const decodedToken = getCurrentUser();
     if (decodedToken === undefined) {
+        console.log("1")
         return false;
     }
     // 유효기간 체크
     if (decodedToken.exp < Date.now() / 1000) {
+        console.log("2")
         return false;
     }
+    console.log("3")
     return true;
 }
 

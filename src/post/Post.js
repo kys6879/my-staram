@@ -23,16 +23,16 @@ function Post() {
     const fetchPosts = () => {
         // 최근순 글 불러오기
         fetch("http://localhost:4000/posts")
-          .then(response => response.json())
-          .then(json => setPosts(json.data));
+            .then(response => response.json())
+            .then(json => setPosts(json.data));
     }
 
     // 2번째 argumnet에는 비어있는 배열을 넘긴다 => callback 함수는 컴포넌트가 처음
     // 그려지고 최초 1번 실행됨.
-    useEffect( () => {
+    useEffect(() => {
         // 2
         fetchPosts();
-    }, [] );
+    }, []);
 
     // 서버랑 통신해서 글들을 불러온다.
 
@@ -53,34 +53,92 @@ function Post() {
             },
             body: JSON.stringify(postInfo)
         })
-        .then(response => response.json())
-        .then(json => {
-            if (json.error) {
-                if (json.error === 'INVALID PARAMETER') {
-                    toast('INVALID PARAMETER. 모두 입력 해주세요.');
-                    return ;
+            .then(response => response.json())
+            .then(json => {
+                if (json.error) {
+                    if (json.error === 'INVALID PARAMETER') {
+                        toast('INVALID PARAMETER. 모두 입력 해주세요.');
+                        return;
+                    }
+                    toast('서버와의 통신이 불안정합니다.');
+                    return;
                 }
-                toast('서버와의 통신이 불안정합니다.');
-                return;
-            }
-            toast('글이 작성되었어요.');
-        })
-        .then(() => {
-            // 3
-            fetchPosts();
-            setTitle('');
-            setContent('');
-        });
+                toast('글이 작성되었어요.');
+            })
+            .then(() => {
+                // 3
+                fetchPosts();
+                setTitle('');
+                setContent('');
+            });
     }
 
     function handleDelete(postId) {
-        console.log("삭제버튼이 눌렸습니당 데이터는 :",postId);
+
+        const deleteInfo = {
+            postId: postId
+        };
+
+        fetch('http://localhost:4000/posts', {
+            method: 'DELETE',
+            headers: {
+                "Content-Type": 'application/json'
+            },
+            body: JSON.stringify(deleteInfo)
+        })
+            .then(response => response.json())
+            .then(json => {
+                if (json.error) {
+                    toast('서버와의 통신이 불안정합니다.');
+                    return;
+                }
+                toast('글이 삭제되었습니다.');
+            })
+            .then(() => {
+                fetchPosts();
+            })
+    }
+
+    function handleEdit(editedTitle, editedContent, postId) {
+        console.log("완료버튼 눌림");
+
+        // 자식 컴포넌트에서 받아야 됨.
+        const updateInfo = {
+            title: editedTitle,
+            content: editedContent,
+            postId: postId
+        };
+
+        return new Promise( (resolve,reject) => {
+            fetch('http://localhost:4000/posts', {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": 'application/json'
+                },
+                body: JSON.stringify(updateInfo)
+            })
+            .then(response => response.json())
+            .then(json => {
+                if (json.error) {
+                    toast('서버와의 통신이 불안정합니다.');
+                    reject('서버와의 통신이 불안정합니다.');
+                }
+                toast('글이 수정되었습니다.');
+            })
+            .then(() => {
+                console.log("글이 수정되었으니 글을 갱신합니다.");
+                fetchPosts();
+            })
+            .then(() => {
+                resolve();
+            })
+        });
     }
 
     return (
         <Container>
             <ToastContainer />
-            
+
             {/* 글 작성 */}
             <Row className="justify-content-center mt-4">
                 <Col xs={4} sm={5} md={6}>
@@ -124,22 +182,23 @@ function Post() {
             {/* 글 조회 */}
             <Row className="justify-content-center mt-4">
                 <Col xs={4} sm={5} md={6}>
-                    { 
-                    // posts 안에는 post가 여러개 
-                      posts.map( post => {
-                        return (
-                            <div key={post.posts_id} className='mb-4'>
-                                <PostCard
-                                    id={post.posts_id}
-                                    onDelete={handleDelete}
-                                    title={post.posts_title}
-                                    content={post.posts_content}
-                                    author={post.users_nickname}
-                                    createdAt={post.posts_created_at}
-                                />
-                            </div>  
-                        )
-                      } )
+                    {
+                        // posts 안에는 post가 여러개 
+                        posts.map(post => {
+                            return (
+                                <div key={post.posts_id} className='mb-4'>
+                                    <PostCard
+                                        id={post.posts_id}
+                                        onDelete={handleDelete}
+                                        onEdit={handleEdit}
+                                        title={post.posts_title}
+                                        content={post.posts_content}
+                                        author={post.users_nickname}
+                                        createdAt={post.posts_created_at}
+                                    />
+                                </div>
+                            )
+                        })
                     }
                 </Col>
             </Row>

@@ -47,9 +47,11 @@ function Login() {
           toast('서버와의 통신이 불안정합니다.');
           return;
         }
+        console.log("성공");
         toast('로그인 성공');
         localStorage.setItem('token', json.data);
         navigate('/posts');
+        window.location.reload();
       });
   }
 
