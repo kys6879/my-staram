@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Container, FloatingLabel, Row, Form, Button, Col } from 'react-bootstrap';
 import { getCurrentUser } from '../auth/tokenService';
 import PostCard from './PostCard';
+import { useNavigate } from 'react-router-dom';
 
 // 사용자들이 쓴 글이 보여지고
 // 여기서 글 작성도 가능
@@ -18,11 +19,19 @@ function Post() {
     const [posts, setPosts] = useState([]);
 
     const displayNickname = getCurrentUser().nickname;
+    const currentUserId = getCurrentUser().id;
+
+    const navigate = useNavigate();
+
+    function handleLogout() {
+        localStorage.removeItem('token');
+        navigate('/login');
+    }
 
     // 1
     const fetchPosts = () => {
         // 최근순 글 불러오기
-        fetch("http://localhost:4000/posts")
+        fetch("http://localhost:4000/posts?currentUserId="+currentUserId)
             .then(response => response.json())
             .then(json => setPosts(json.data));
     }
@@ -109,7 +118,7 @@ function Post() {
             postId: postId
         };
 
-        return new Promise( (resolve,reject) => {
+        return new Promise((resolve, reject) => {
             fetch('http://localhost:4000/posts', {
                 method: 'PUT',
                 headers: {
@@ -117,22 +126,44 @@ function Post() {
                 },
                 body: JSON.stringify(updateInfo)
             })
-            .then(response => response.json())
-            .then(json => {
-                if (json.error) {
-                    toast('서버와의 통신이 불안정합니다.');
-                    reject('서버와의 통신이 불안정합니다.');
-                }
-                toast('글이 수정되었습니다.');
-            })
-            .then(() => {
-                console.log("글이 수정되었으니 글을 갱신합니다.");
-                fetchPosts();
-            })
-            .then(() => {
-                resolve();
-            })
+                .then(response => response.json())
+                .then(json => {
+                    if (json.error) {
+                        toast('서버와의 통신이 불안정합니다.');
+                        reject('서버와의 통신이 불안정합니다.');
+                    }
+                    toast('글이 수정되었습니다.');
+                })
+                .then(() => {
+                    console.log("글이 수정되었으니 글을 갱신합니다.");
+                    fetchPosts();
+                })
+                .then(() => {
+                    resolve();
+                })
         });
+    }
+
+    function handleLike(postId, userId) {
+        console.log("좋아요 버튼 눌림!", postId, userId);
+        
+        const likeInfo = {
+            postId: postId,
+            userId: userId
+        }
+
+        fetch('http://localhost:4000/like', {
+            method: 'POST',
+            headers: {
+                "Content-Type": 'application/json'
+            },
+            body: JSON.stringify(likeInfo)
+        })
+        .then(response => response.json())
+        .then(json => {
+            console.log("like 결과 : ", json);
+            fetchPosts();
+        })
     }
 
     return (
@@ -147,7 +178,12 @@ function Post() {
                             {displayNickname}
                         </span>님.
                         반갑습니다.
+                        <Button
+                            variant='success'
+                            onClick={handleLogout}
+                            size='sm'>로그아웃</Button>
                     </div>
+
                     <hr className="my-3" />
                     <Form onSubmit={handleSubmit}>
                         <FloatingLabel
@@ -195,6 +231,8 @@ function Post() {
                                         content={post.posts_content}
                                         author={post.users_nickname}
                                         createdAt={post.posts_created_at}
+                                        onLike={handleLike}
+                                        isLike={post.is_liked}
                                     />
                                 </div>
                             )

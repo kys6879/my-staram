@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import { Button, Card, Form, FloatingLabel } from 'react-bootstrap';
 import { AiFillHeart, AiOutlineHeart  } from 'react-icons/ai'; 
+import { getCurrentUser } from '../auth/tokenService';
 
 // props
-const PostCard = ({ id, title, content, author, createdAt, onDelete, onEdit }) => {
+const PostCard = ({ id, title, content, author, createdAt, onDelete, onEdit, onLike, isLike }) => {
 
     const [isEdit, setIsEdit] = useState(false);
 
     const [editedTitle, setEditedTitle] = useState(title);
     const [editedContent, setEditedContent] = useState(content);
 
-    const [isLike, setIsLike] = useState(false);
+    function handleLike() {
+        const currentUser = getCurrentUser();
+        onLike(id, currentUser.id) // 글 번호랑, 좋아요 버튼을 누른 사용자 = 로그인한 사용자
+    }
 
     function handleDelete() {
         onDelete(id);
@@ -32,9 +36,7 @@ const PostCard = ({ id, title, content, author, createdAt, onDelete, onEdit }) =
         })
     }
 
-    function handleLike() {
-        setIsLike(!isLike) 
-    }
+
 
     return (
         <Card>
